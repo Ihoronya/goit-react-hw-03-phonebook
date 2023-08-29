@@ -33,11 +33,13 @@
 }
 
 .phonebook form input {
-    margin: 5px 0;
+margin: 5px 0;
     border: 1px solid #304929;
     border-radius: 4px;
     height: 30px;
-    padding-left: 10px;
+    padding: 0 10px;
+    width: 100%;
+    box-sizing: border-box;
 }
 
 .phonebook form input:hover {

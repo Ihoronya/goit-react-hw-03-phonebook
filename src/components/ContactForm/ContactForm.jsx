@@ -1,37 +1,50 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { Formik, Field, Form, ErrorMessage } from 'formik';
-import InputMask from 'react-input-mask';
 import s from './ContactForm.module.css';
 import { nanoid } from 'nanoid';
+import * as Yup from 'yup';
+import InputMask from 'react-input-mask'; 
 
-const ContactForm = ({ onAdd, checkUniqueName }) => {
+const validationSchema = Yup.object({
+  name: Yup.string()
+    .matches(
+      /^[a-zA-Zа-яА-Я]+(([' -][a-zA-Zа-яА-Я ])?[a-zA-Zа-яА-Я]*)*$/,
+      'Name may contain only letters, apostrophe, dash, and spaces.'
+    )
+    .max(15, 'Must be 15 characters or less')
+    .required('Required'),
+
+  number: Yup.string()
+    .matches(
+      /^\+38 \(0\d{2}\) \d{3}-\d{2}-\d{2}$/,
+      'Ukraine phone number format: +38 (0XX) XXX-XX-XX'
+    )
+    .required('Required'),
+});
+
+const ContactForm = ({ onAdd }) => {
   const initialValues = {
     name: '',
     number: '',
   };
 
-  const onSubmit = (values, { resetForm }) => {
-    const isFormValid = validForm(values);
-
-    if (!isFormValid) return;
-
-    onAdd({ id: nanoid(), ...values });
-    resetForm();
-  };
-
-  const validForm = ({ name, number }) => {
-    if (!name || !number) {
-      alert('Name and Number are required');
-      return false;
+  const onSubmit = async (values, { resetForm, setSubmitting }) => {
+    const isSuccess = await onAdd({ id: nanoid(), ...values });
+    if (isSuccess) {
+      resetForm();
+      setSubmitting(false);
     }
-    return checkUniqueName(name);
   };
 
   return (
     <div className={s.phonebook}>
       <h2>Phonebook 📞</h2>
-      <Formik initialValues={initialValues} onSubmit={onSubmit}>
+      <Formik
+        initialValues={initialValues}
+        onSubmit={onSubmit}
+        validationSchema={validationSchema}
+      >
         {({
           values,
           errors,
@@ -42,26 +55,35 @@ const ContactForm = ({ onAdd, checkUniqueName }) => {
           isSubmitting,
         }) => (
           <Form onSubmit={handleSubmit}>
-            <Field
-              type="text"
-              name="name"
-              placeholder="Enter Name"
-              pattern="^[a-zA-Zа-яА-Я]+(([' -][a-zA-Zа-яА-Я ])?[a-zA-Zа-яА-Я]*)*$"
-              title="Name may contain only letters, apostrophe, dash and spaces. For example Adrian, Jacob Mercer, Charles de Batz de Castelmore d'Artagnan"
-              required
-            />
-            <ErrorMessage name="name" component="div" className={s.error} />
-            <Field
-              as={InputMask}
-              type="tel"
-              name="number"
-              placeholder="Enter Phone Number"
-              mask="+38 (099) 999-99-99"
-              pattern="^\+38 \(\d{3}\) \d{3}-\d{2}-\d{2}$"
-              title="Ukraine phone number format: +38 (0XX) XXX-XX-XX"
-              required
-            />
-            <ErrorMessage name="number" component="div" className={s.error} />
+            <div>              
+              <Field
+                type="text"
+                name="name"
+                id="name"
+                placeholder="Enter Name"
+                onChange={handleChange}
+                onBlur={handleBlur}
+                value={values.name}
+                className={touched.name && errors.name ? s.errorInput : ''}
+              />
+              <ErrorMessage name="name" component="div" className={s.error} />
+            </div>
+
+            <div>              
+              <InputMask
+                mask="+38 (099) 999-99-99"
+                type="tel"
+                name="number"
+                id="number"
+                placeholder="Enter Phone Number"
+                onChange={handleChange}
+                onBlur={handleBlur}
+                value={values.number}
+                className={touched.number && errors.number ? s.errorInput : ''}
+              />
+              <ErrorMessage name="number" component="div" className={s.error} />
+            </div>
+
             <button type="submit" disabled={isSubmitting}>
               Add Contact
             </button>
@@ -74,7 +96,6 @@ const ContactForm = ({ onAdd, checkUniqueName }) => {
 
 ContactForm.propTypes = {
   onAdd: PropTypes.func.isRequired,
-  checkUniqueName: PropTypes.func.isRequired,
 };
 
 export default ContactForm;

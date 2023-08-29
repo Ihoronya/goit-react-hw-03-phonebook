@@ -14,19 +14,22 @@ class App extends Component {
     filter: '',
   };
 
-  handleAddContact = newContact =>
+  handleAddContact = newContact => {
+    if (this.checkIsDuplicate(newContact)) return false;
     this.setState(({ contacts }) => ({
       contacts: [...contacts, newContact],
     }));
 
-  handleCheckName = name => {
-    const { contacts } = this.state;
-    const isExistContact = !!contacts.find(contact => contact.name === name);
+  }
+    
+checkIsDuplicate = newContact => {
+  const { contacts } = this.state;
+  const isExistContact = contacts.some(contact => contact.name.toLowerCase() === newContact.name.toLowerCase());
 
-    isExistContact && alert(`${name} is already in contacts`);
+  isExistContact && alert(`${newContact.name} is already in contacts`);
 
-    return !isExistContact;
-  };
+  return isExistContact;
+};
 
   handleRemoveContact = id =>
     this.setState(({ contacts }) => ({
@@ -49,7 +52,7 @@ class App extends Component {
       <>
         <ContactForm
           onAdd={this.handleAddContact}
-          checkUniqueName={this.handleCheckName}
+          // checkUniqueName={this.handleCheckName}
         />
 
        
