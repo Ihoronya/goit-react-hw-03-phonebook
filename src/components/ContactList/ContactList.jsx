@@ -2,7 +2,6 @@ import s from './ContactList.module.css';
 
 const ContactList = ({ contacts, onRemove, children }) => {
   return (
-    <section>
       <div className={s.contacts}>
         <h2>Contacts</h2>
         {children}
@@ -32,7 +31,6 @@ const ContactList = ({ contacts, onRemove, children }) => {
           )}
         </ul>
       </div>
-    </section>
   );
 };
 
