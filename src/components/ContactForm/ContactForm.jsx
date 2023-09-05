@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { Formik, Field, Form, ErrorMessage } from 'formik';
 import s from './ContactForm.module.css';
@@ -24,16 +24,28 @@ const validationSchema = Yup.object({
 });
 
 const ContactForm = ({ onAdd }) => {
+  const [contacts, setContacts] = useState([]);
   const initialValues = {
     name: '',
     number: '',
   };
 
-  const onSubmit = async (values, { resetForm, setSubmitting }) => {
-    const isSuccess = await onAdd({ id: nanoid(), ...values });
-    if (isSuccess) {
+  useEffect(() => {
+    const savedContacts = localStorage.getItem('contacts');
+    if (savedContacts) {
+      const parsedContacts = JSON.parse(savedContacts);
+      setContacts(parsedContacts);
+    }
+  }, []);
+
+  const onSubmit = (values, { resetForm, setSubmitting }) => {
+    const isSuccess = onAdd({ id: nanoid(), ...values });
+    if (isSuccess !== false) {
       resetForm();
       setSubmitting(false);
+      const contactsToSave = [...contacts, { id: nanoid(), ...values }];
+      localStorage.setItem('contacts', JSON.stringify(contactsToSave));
+      setContacts(contactsToSave); // Оновити стан контактів
     }
   };
 
