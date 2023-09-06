@@ -10,29 +10,17 @@ class App extends Component {
   };
 
   componentDidMount() {
-    // Завантаження контактів з localStorage при запуску застосунку
     const savedContacts = localStorage.getItem('contacts');
     if (savedContacts) {
       this.setState({ contacts: JSON.parse(savedContacts) });
-    }
-
-    // Завантаження фільтра з localStorage при запуску застосунку
-    const savedFilter = localStorage.getItem('filter');
-    if (savedFilter) {
-      this.setState({ filter: savedFilter });
-    }
+    } 
   }
 
   componentDidUpdate(prevProps, prevState) {
-    // Збереження контактів у localStorage після зміни стану
     if (prevState.contacts !== this.state.contacts) {
       localStorage.setItem('contacts', JSON.stringify(this.state.contacts));
     }
 
-    // Збереження фільтра у localStorage після зміни стану
-    if (prevState.filter !== this.state.filter) {
-      localStorage.setItem('filter', this.state.filter);
-    }
   }
 
   handleAddContact = newContact => {

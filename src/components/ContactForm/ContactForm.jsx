@@ -14,7 +14,6 @@ const validationSchema = Yup.object({
     )
     .max(15, 'Must be 15 characters or less')
     .required('Required'),
-
   number: Yup.string()
     .matches(
       /^\+38 \(0\d{2}\) \d{3}-\d{2}-\d{2}$/,
@@ -30,23 +29,13 @@ const ContactForm = ({ onAdd }) => {
     number: '',
   };
 
-  useEffect(() => {
-    const savedContacts = localStorage.getItem('contacts');
-    if (savedContacts) {
-      const parsedContacts = JSON.parse(savedContacts);
-      setContacts(parsedContacts);
-    }
-  }, []);
+
 
   const onSubmit = (values, { resetForm, setSubmitting }) => {
     const isSuccess = onAdd({ id: nanoid(), ...values });
-    if (isSuccess !== false) {
+    if (!isSuccess) return;
       resetForm();
-      setSubmitting(false);
-      const contactsToSave = [...contacts, { id: nanoid(), ...values }];
-      localStorage.setItem('contacts', JSON.stringify(contactsToSave));
-      setContacts(contactsToSave); // Оновити стан контактів
-    }
+      setSubmitting(false);   
   };
 
   return (
