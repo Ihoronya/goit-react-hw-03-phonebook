@@ -1,10 +1,10 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 import { Formik, Field, Form, ErrorMessage } from 'formik';
 import s from './ContactForm.module.css';
 import { nanoid } from 'nanoid';
 import * as Yup from 'yup';
-import InputMask from 'react-input-mask'; 
+import InputMask from 'react-input-mask';
 
 const validationSchema = Yup.object({
   name: Yup.string()
@@ -23,19 +23,16 @@ const validationSchema = Yup.object({
 });
 
 const ContactForm = ({ onAdd }) => {
-  const [contacts, setContacts] = useState([]);
   const initialValues = {
     name: '',
     number: '',
   };
 
-
-
   const onSubmit = (values, { resetForm, setSubmitting }) => {
     const isSuccess = onAdd({ id: nanoid(), ...values });
     if (!isSuccess) return;
-      resetForm();
-      setSubmitting(false);   
+    resetForm();
+    setSubmitting(false);
   };
 
   return (
@@ -56,7 +53,7 @@ const ContactForm = ({ onAdd }) => {
           isSubmitting,
         }) => (
           <Form onSubmit={handleSubmit}>
-            <div>              
+            <div>
               <Field
                 type="text"
                 name="name"
@@ -70,7 +67,7 @@ const ContactForm = ({ onAdd }) => {
               <ErrorMessage name="name" component="div" className={s.error} />
             </div>
 
-            <div>              
+            <div>
               <InputMask
                 mask="+38 (099) 999-99-99"
                 type="tel"
